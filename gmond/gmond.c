@@ -1847,11 +1847,11 @@ xml_escape(char *dst, const char *src, size_t max_dst_len)
     while (*s)
         {
         if (dst - dst_start > max_dst_len)
-	  {
+          {
             *dst='\0'; break;
-	  }
+          }
         switch (*s)
-	    {
+          {
             case '&':
               strncat(dst, "&amp;", max_dst_len);
               dst += 5;
@@ -1862,8 +1862,8 @@ xml_escape(char *dst, const char *src, size_t max_dst_len)
               break;
             case '>':
               strncat(dst, "&gt;", max_dst_len);
-	      dst += 4;
-	      break;
+              dst += 4;
+              break;
             case '"':
               strncat(dst, "&quot;", max_dst_len);
               dst += 6;
@@ -1885,8 +1885,8 @@ xml_escape(char *dst, const char *src, size_t max_dst_len)
                   *dst ++ = *s;
                   *dst = '\0';
               }
-	    }
-	  s++;
+          }
+          s++;
         }
     return (dst - dst_start);
 }
@@ -1935,7 +1935,7 @@ gmetric_value_to_str(Ganglia_value_msg *message)
 static apr_status_t
 print_host_metric( apr_socket_t *client, Ganglia_metadata *data, Ganglia_metadata *val, apr_time_t now )
 {
-  char metricxml[1024];
+  char metricxml[2048];
   apr_size_t len;
   apr_status_t ret;
   char *metricName=NULL, *realName=NULL;
@@ -1952,7 +1952,7 @@ print_host_metric( apr_socket_t *client, Ganglia_metadata *data, Ganglia_metadat
       return APR_SUCCESS;
     }
   
-  len = apr_snprintf(metricxml, 1024,
+  len = apr_snprintf(metricxml, 2048,
           "<METRIC NAME=\"%s\" VAL=\"%s\" TYPE=\"%s\" UNITS=\"%s\" TN=\"%d\" TMAX=\"%d\" DMAX=\"%d\" SLOPE=\"%s\">\n",
               metricName,
               gmetric_value_to_str(&(val->message_u.v_message)),
@@ -1970,20 +1970,20 @@ print_host_metric( apr_socket_t *client, Ganglia_metadata *data, Ganglia_metadat
   if ((ret == APR_SUCCESS) && allow_extra_data) 
     {
       int extra_len = data->message_u.f_message.Ganglia_metadata_msg_u.gfull.metric.metadata.metadata_len;
-      len = apr_snprintf(metricxml, 1024, "<EXTRA_DATA>\n");
+      len = apr_snprintf(metricxml, 2048, "<EXTRA_DATA>\n");
       socket_send(client, metricxml, &len);
       for (; extra_len > 0; extra_len--) 
         {
-          len = apr_snprintf(metricxml, 1024, "<EXTRA_ELEMENT NAME=\"%s\" VAL=\"%s\"/>\n", 
+          len = apr_snprintf(metricxml, 2048, "<EXTRA_ELEMENT NAME=\"%s\" VAL=\"%s\"/>\n", 
                  data->message_u.f_message.Ganglia_metadata_msg_u.gfull.metric.metadata.metadata_val[extra_len-1].name,
                  data->message_u.f_message.Ganglia_metadata_msg_u.gfull.metric.metadata.metadata_val[extra_len-1].data);
           socket_send(client, metricxml, &len);
         }
-        len = apr_snprintf(metricxml, 1024, "</EXTRA_DATA>\n");
+        len = apr_snprintf(metricxml, 2048, "</EXTRA_DATA>\n");
         socket_send(client, metricxml, &len);
     }
   /* Send the closing tag */
-  len = apr_snprintf(metricxml, 1024, "</METRIC>\n");
+  len = apr_snprintf(metricxml, 2048, "</METRIC>\n");
 
   return socket_send(client, metricxml, &len);
 }
